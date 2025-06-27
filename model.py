@@ -1,6 +1,6 @@
 import pickle
 from dataclasses import dataclass
-from typing import Tuple
+from typing import Iterable, Tuple
 
 import torch
 from torch import nn
@@ -19,17 +19,18 @@ TGT_LEN = OUTPUT_LEN + 2
 
 
 def load_dataset(path: str) -> Dataset:
+    """Load pickled list of ``(input, output)`` pairs."""
     with open(path, "rb") as f:
-        df = pickle.load(f)
-    return AdditionDataset(df)
+        data = pickle.load(f)
+    return AdditionDataset(data)
 
 
 class AdditionDataset(Dataset):
-    def __init__(self, dataframe):
+    def __init__(self, data: Iterable[Tuple[str, str]]):
         self.x, self.y = [], []
-        for _, row in dataframe.iterrows():
-            inp = row["input"][:INPUT_LEN].ljust(INPUT_LEN)
-            out = row["output"][:OUTPUT_LEN].ljust(OUTPUT_LEN)
+        for inp_str, out_str in data:
+            inp = inp_str[:INPUT_LEN].ljust(INPUT_LEN)
+            out = out_str[:OUTPUT_LEN].ljust(OUTPUT_LEN)
             src_ids = [char2idx[c] for c in inp]
             tgt_ids = [char2idx[BOS]] + [char2idx[c] for c in out] + [char2idx[EOS]]
             tgt_ids += [char2idx[PAD]] * (TGT_LEN - len(tgt_ids))
@@ -95,6 +96,21 @@ def train(model: Seq2SeqTransformer, dataset: Dataset, device: str = "cpu", epoc
                 total_te += loss.item()
         test_loss = total_te / len(test_dl)
         print(f"Epoch {epoch:02d} – Train {train_loss:.4f} | Test {test_loss:.4f}")
+
+
+def evaluate(model: Seq2SeqTransformer, dataset: Dataset, device: str = "cpu") -> float:
+    """Return token-level accuracy on `dataset`."""
+    dl = DataLoader(dataset, batch_size=32)
+    model.eval(); correct = 0; total = 0
+    with torch.no_grad():
+        for src, tgt in dl:
+            src, tgt = src.to(device), tgt.to(device)
+            logits = model(src, tgt[:, :-1])
+            pred = logits.argmax(dim=-1)
+            mask = tgt[:, 1:] != char2idx[PAD]
+            correct += (pred[mask] == tgt[:, 1:][mask]).sum().item()
+            total += mask.sum().item()
+    return correct / total if total else 0.0
 
 
 if __name__ == "__main__":

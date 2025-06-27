@@ -2,9 +2,18 @@
 
 This repository contains a minimal dataset generator, a small transformer model for the addition task and a stub demonstrating how one might start experimenting with a GFlowNet-style sampler.
 
+## Installation
+
+The code requires Python 3.8+ and PyTorch. Install dependencies with:
+
+```bash
+pip install -r requirements.txt
+```
+
 ## Dataset generation
 
-Run `python dataset.py` to generate `addition_dataset.pkl` which contains pairs of inputs of the form `"a + b"` and their sum.
+Run `python dataset.py` to generate `addition_dataset.pkl`. The file stores a
+pickled list of `(input, output)` strings such as `"3 + 4"` and its result.
 
 ## Training the transformer
 
@@ -13,5 +22,9 @@ Run `python dataset.py` to generate `addition_dataset.pkl` which contains pairs 
 ## GFlowNet stub
 
 `python gflownet_simple.py` demonstrates how to sample token sequences using the trained model. This is **not** a full GFlowNet implementation but should help start experimenting with the idea of sampling actions and computing probabilities.
+
+## Testing the model
+
+Run `python test_model.py` to train the transformer and then compute token-level accuracy on the dataset. The script also prints a few example generations so you can quickly gauge whether the model learned to add correctly.
 
 Feel free to modify these scripts to explore Bayesian updates using GFlowNet sampling strategies.
