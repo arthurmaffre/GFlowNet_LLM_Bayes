@@ -14,4 +14,8 @@ Run `python dataset.py` to generate `addition_dataset.pkl` which contains pairs 
 
 `python gflownet_simple.py` demonstrates how to sample token sequences using the trained model. This is **not** a full GFlowNet implementation but should help start experimenting with the idea of sampling actions and computing probabilities.
 
+## Testing the model
+
+Run `python test_model.py` to train the transformer and then compute token-level accuracy on the dataset. The script also prints a few example generations so you can quickly gauge whether the model learned to add correctly.
+
 Feel free to modify these scripts to explore Bayesian updates using GFlowNet sampling strategies.

@@ -97,6 +97,21 @@ def train(model: Seq2SeqTransformer, dataset: Dataset, device: str = "cpu", epoc
         print(f"Epoch {epoch:02d} – Train {train_loss:.4f} | Test {test_loss:.4f}")
 
 
+def evaluate(model: Seq2SeqTransformer, dataset: Dataset, device: str = "cpu") -> float:
+    """Return token-level accuracy on `dataset`."""
+    dl = DataLoader(dataset, batch_size=32)
+    model.eval(); correct = 0; total = 0
+    with torch.no_grad():
+        for src, tgt in dl:
+            src, tgt = src.to(device), tgt.to(device)
+            logits = model(src, tgt[:, :-1])
+            pred = logits.argmax(dim=-1)
+            mask = tgt[:, 1:] != char2idx[PAD]
+            correct += (pred[mask] == tgt[:, 1:][mask]).sum().item()
+            total += mask.sum().item()
+    return correct / total if total else 0.0
+
+
 if __name__ == "__main__":
     device = "cuda" if torch.cuda.is_available() else "cpu"
     ds = load_dataset("addition_dataset.pkl")
