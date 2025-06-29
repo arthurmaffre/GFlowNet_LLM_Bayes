@@ -4,7 +4,7 @@ from typing import List, Tuple
 
 
 def generate_addition_dataset(
-    num_samples: int = 1000, max_val: int = 49
+    num_samples: int = 1000, max_val: int = 20
 ) -> List[Tuple[str, str]]:
     """Generate a list of ``(input, output)`` pairs for ``a + b``."""
     data: List[Tuple[str, str]] = []

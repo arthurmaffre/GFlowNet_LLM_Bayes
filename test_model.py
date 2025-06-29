@@ -25,22 +25,23 @@ def decode_ids(ids):
     return "".join(chars)
 
 
-def generate(model, src, device="cpu"):
+def generate(model, src, device="cuda"):
     model.eval()
     src = src.unsqueeze(0).to(device)
     tgt = torch.tensor([[char2idx[BOS]]], device=device)
     with torch.no_grad():
         for _ in range(TGT_LEN):
             out = model(src, tgt)
-            next_id = out[0, -1].argmax(-1, keepdim=True)
+            next_id = out[:, -1].argmax(-1).unsqueeze(1)  # ✅ CORRECTION ICI
             tgt = torch.cat([tgt, next_id], dim=1)
             if next_id.item() == char2idx[EOS]:
                 break
     return tgt.squeeze(0)
 
 
+
 def main():
-    device = "cuda" if torch.cuda.is_available() else "cpu"
+    device = "cuda" if torch.cuda.is_available() else "cuda"
     ds = load_dataset("addition_dataset.pkl")
     model = Seq2SeqTransformer(VOCAB_SIZE).to(device)
     train(model, ds, device, epochs=10)
