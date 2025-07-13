@@ -90,7 +90,7 @@ pip install torch numpy matplotlib pandas pickle5
 
 The main script is test_model.py. It generates data, trains baseline LLM, runs adversarial training, and tests robustness.
 
-**Note**: The code automatically detects and utilizes available hardware (CUDA, MPS for Apple Silicon, or CPU).
+**Note**: The code automatically detects and utilizes available hardware (CUDA > MPS (Apple) > CPU).
 
 ## Run the Script
 
