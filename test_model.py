@@ -8,16 +8,10 @@ import pickle
 import numpy as np
 from typing import List, Tuple
 
+
 # Constants
-SPECIAL = ["<pad>", "<bos>", "<eos>"]
-BASE_CHARS = list("0123456789+= ")
-VOCAB = SPECIAL + BASE_CHARS
-PAD, BOS, EOS = SPECIAL
-char2idx = {ch: i for i, ch in enumerate(VOCAB)}
-idx2char = {i: ch for ch, i in char2idx.items()}
-VOCAB_SIZE = len(VOCAB)
-MAX_LEN = 12
-DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+from constants import VOCAB_SIZE, char2idx, PAD, DEVICE, MAX_LEN, BOS, EOS
+
 
 print(f"Vocab size: {VOCAB_SIZE}, Device: {DEVICE}")
 
