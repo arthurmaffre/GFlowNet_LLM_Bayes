@@ -107,9 +107,24 @@ python test_model.py
 
 ## License
 
-MIT-free to use/modify/cite.
+License
+This project is licensed under the MIT License with an additional attribution requirement. You are free to use, modify, and distribute the code, provided that you include proper attribution to the original author in any derivative works, publications, or presentations that use or reference this code. Specifically:
 
-Last Updated: July 10, 2025
+Retain the copyright notice and this license in all copies or substantial portions of the software.
+Cite this repository in any academic or technical publications as follows:
+
+```LATEX
+@misc{maffre2025gflownetllmbayes,
+  author = {Arthur Maffre},
+  title = {GFlowNet_LLM_Bayes: Enhancing LLMs with Causal Reasoning and Bayesian Coherence using GFlowNets},
+  year = {2025},
+  publisher = {GitHub},
+  journal = {GitHub Repository},
+  howpublished = {\url{https://github.com/arthurmaffre/GFlowNet_LLM_Bayes}},
+}
+```
+Failure to provide attribution may violate the terms of this license. See the LICENSE file for full details.
+
 
 
 ## 🚧 Work in Progress
