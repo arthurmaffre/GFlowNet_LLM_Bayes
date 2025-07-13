@@ -8,4 +8,4 @@ char2idx = {ch: i for i, ch in enumerate(VOCAB)}
 idx2char = {i: ch for ch, i in char2idx.items()}
 VOCAB_SIZE = len(VOCAB)
 MAX_LEN = 12
-DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+DEVICE = "cuda" if torch.cuda.is_available() else "mps" if torch.mps.is_available() else "cpu"
