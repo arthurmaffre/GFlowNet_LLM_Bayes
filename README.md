@@ -122,7 +122,7 @@ GFlowNet_LLM_Bayes/
 ├── constants.py           # ✅ Vocab, constants
 ├── dataset.py             # ✅ Data generation and loading
 ├── models.py              # 🔷 LLM and GFlowNet models
-├── env.py                 # ❌ Environment class
+├── env.py                 # 🔷 Environment class
 ├── utils.py               # ❌ Helpers (sampling, losses, etc.)
 ├── train.py               # ❌ Training functions
 ├── test.py                # ❌ Testing functions
