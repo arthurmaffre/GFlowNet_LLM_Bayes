@@ -5,6 +5,8 @@ from train import train_baseline, train_adversarial
 from test import test_robustness
 from dataset import load_or_generate_dataset
 
+import torch
+
 print(f"Vocab size: {VOCAB_SIZE}, Device: {DEVICE}")
 
 data = load_or_generate_dataset()
