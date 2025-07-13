@@ -12,8 +12,10 @@ from typing import List, Tuple
 # Constants
 from constants import VOCAB_SIZE, char2idx, PAD, DEVICE, MAX_LEN, BOS, EOS
 
+print(f"\n✅ Model initialized on device: {DEVICE} (PyTorch)\n")
 
-print(f"Vocab size: {VOCAB_SIZE}, Device: {DEVICE}")
+
+print(f"Vocab size: {VOCAB_SIZE}")
 
 # Dataset Generation
 def generate_addition_dataset(num_samples: int = 5000, max_val: int = 99) -> List[Tuple[str, str]]:
