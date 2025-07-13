@@ -1,9 +1,8 @@
 import torch
 import math
 from torch.distributions import Categorical
-import random
 import numpy as np
-#from constants import DEVICE, char2idx, BOS, EOS, VOCAB_SIZE, idx2char, MAX_LEN
+from constants import DEVICE, char2idx, BOS, EOS, VOCAB_SIZE, idx2char, MAX_LEN
 from models import FlowNet
 
 def sample_trajectory(gflow_model: FlowNet, env):

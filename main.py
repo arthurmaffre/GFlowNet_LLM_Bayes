@@ -1,4 +1,4 @@
-#from constants import VOCAB_SIZE, char2idx, PAD, DEVICE
+from constants import VOCAB_SIZE, char2idx, PAD, DEVICE
 from models import Seq2SeqTransformer, FlowNet
 from env import AddSeqEnv
 from train import train_baseline, train_adversarial
