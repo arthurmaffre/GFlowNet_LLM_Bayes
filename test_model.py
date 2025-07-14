@@ -8,6 +8,9 @@ import pickle
 import numpy as np
 from typing import List, Tuple
 
+from torch.nn.utils.rnn import pad_sequence
+
+
 
 # Constants
 from constants import VOCAB_SIZE, char2idx, PAD, DEVICE, MAX_LEN, BOS, EOS
@@ -218,28 +221,40 @@ llm_opt = optim.Adam(llm_model.parameters(), lr=5e-4)
 
 print_number_params(llm_model)
 
-def train_baseline(num_epochs=50):
+def train_baseline(num_epochs=50, batch_size=128):
+    criterion = nn.CrossEntropyLoss(ignore_index=char2idx[PAD])
     for epoch in range(num_epochs):
-        total_loss = 0
-        num_batches = 256 // 2  # Smaller mini-batch for stability
-        for _ in range(num_batches):
-            samples = random.sample(train_data, 128)
-            for input_str, target_str in samples:
-                src = torch.tensor([[char2idx[BOS]] + [char2idx[c] for c in input_str]], device=DEVICE)
-                tgt = torch.tensor([[char2idx[BOS]] + [char2idx[c] for c in target_str] + [char2idx[EOS]]], device=DEVICE)
-                tgt_input = tgt[:, :-1]
-                tgt_output = tgt[:, 1:].view(-1)
-                logits = llm_model(src, tgt_input).view(-1, VOCAB_SIZE)
-                loss = criterion(logits, tgt_output)
-                llm_opt.zero_grad()
-                loss.backward()
-                llm_opt.step()
-                total_loss += loss.item()
-        avg_loss = total_loss / (num_batches * 128)
+        # Mélange les données pour chaque epoch
+        random.shuffle(train_data)
+        total_loss = 0.0
+        num_batches = len(train_data) // batch_size  # ~31 pour 4000/128
+        for batch_idx in range(num_batches):
+            batch_samples = train_data[batch_idx * batch_size : (batch_idx + 1) * batch_size]
+            src_list = []
+            tgt_list = []
+            for input_str, target_str in batch_samples:
+                src = torch.tensor([char2idx[BOS]] + [char2idx[c] for c in input_str], device=DEVICE)
+                tgt = torch.tensor([char2idx[BOS]] + [char2idx[c] for c in target_str] + [char2idx[EOS]], device=DEVICE)
+                src_list.append(src)
+                tgt_list.append(tgt)
+            # Pad les séquences pour batch
+            src_padded = pad_sequence(src_list, batch_first=True, padding_value=char2idx[PAD])
+            tgt_padded = pad_sequence(tgt_list, batch_first=True, padding_value=char2idx[PAD])
+            tgt_input = tgt_padded[:, :-1]
+            tgt_output = tgt_padded[:, 1:].contiguous().view(-1)
+            logits = llm_model(src_padded, tgt_input).contiguous().view(-1, VOCAB_SIZE)
+            loss = criterion(logits, tgt_output)
+            llm_opt.zero_grad()
+            loss.backward()
+            llm_opt.step()
+            total_loss += loss.item()
+        avg_loss = total_loss / num_batches
         print(f"Baseline Epoch {epoch+1}: Loss = {avg_loss:.4f}")
         if avg_loss < 0.5:
             break
+
 train_baseline()
+
 torch.save(llm_model.state_dict(), "baseline_llm.pth")
 
 gflow_model = FlowNet().to(DEVICE)
