@@ -13,7 +13,7 @@ from torch.nn.utils.rnn import pad_sequence
 
 
 # Constants
-from constants import VOCAB_SIZE, char2idx, PAD, DEVICE, MAX_LEN, BOS, EOS
+from constants import VOCAB_SIZE, char2idx, idx2char, PAD, DEVICE, MAX_LEN, BOS, EOS
 
 # Utils
 from utils import print_number_params
