@@ -81,3 +81,8 @@ def parse_and_compute_target(prefix_str):
         return str(a + b)
     except:
         return None
+    
+
+def print_number_params(model):
+    pn = sum(p.numel() for p in model.parameters())
+    print(f"Model: {model.__class__.__name__} has: {pn:,}".replace(",", " ") + " parameters")

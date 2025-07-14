@@ -12,6 +12,9 @@ from typing import List, Tuple
 # Constants
 from constants import VOCAB_SIZE, char2idx, PAD, DEVICE, MAX_LEN, BOS, EOS
 
+# Utils
+from utils import print_number_params
+
 print(f"\n✅ Model initialized on device: {DEVICE} (PyTorch)\n")
 
 
@@ -39,7 +42,7 @@ with open("addition_dataset.pkl", "rb") as f:
     full_data = pickle.load(f)
 train_data = full_data[:4000]
 test_data = full_data[4000:]
-print(f"Loaded {len(train_data)} train samples, {len(test_data)} test samples.")
+print(f"Loaded {len(train_data)} train samples, {len(test_data)} test samples. \n")
 
 # Seq2SeqTransformer (LLM)
 class Seq2SeqTransformer(nn.Module):
@@ -213,6 +216,8 @@ llm_model = Seq2SeqTransformer(VOCAB_SIZE, pad_idx=char2idx[PAD]).to(DEVICE)
 criterion = nn.CrossEntropyLoss(ignore_index=char2idx[PAD])
 llm_opt = optim.Adam(llm_model.parameters(), lr=5e-4)
 
+print_number_params(llm_model)
+
 def train_baseline(num_epochs=50):
     for epoch in range(num_epochs):
         total_loss = 0
@@ -239,6 +244,9 @@ torch.save(llm_model.state_dict(), "baseline_llm.pth")
 
 gflow_model = FlowNet().to(DEVICE)
 gflow_opt = optim.Adam(gflow_model.parameters(), lr=3e-4)
+
+print_number_params(gflow_model)
+
 
 def train_adversarial(num_epochs=20, batch_size=64, mix_ratio=0.5):
     # mix_ratio: fraction generated vs. real data (cursor for efficiency test)
