@@ -64,7 +64,9 @@ class Seq2SeqTransformer(nn.Module):
 
     @staticmethod
     def causal_mask(sz, device):
-        return torch.triu(torch.full((sz, sz), float('-inf'), device=device), diagonal=1)
+        # Changed to bool type: True where masked (do not attend), False where attendable.
+        # This creates a upper triangular mask (future positions masked).
+        return torch.triu(torch.ones((sz, sz), dtype=bool, device=device), diagonal=1)
 
     def forward(self, src, tgt):
         src_emb = self.dropout(self.add_pos(src))
