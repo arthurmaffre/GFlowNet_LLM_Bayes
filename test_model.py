@@ -46,7 +46,7 @@ print(f"Loaded {len(train_data)} train samples, {len(test_data)} test samples. \
 
 # Seq2SeqTransformer (LLM)
 class Seq2SeqTransformer(nn.Module):
-    def __init__(self, vocab_size: int, emb_dim: int = 16, n_heads: int = 1, n_layers: int = 1, pad_idx: int = 0):
+    def __init__(self, vocab_size: int, emb_dim: int = 16, n_heads: int = 2, n_layers: int = 1, pad_idx: int = 0):
         super().__init__()
         self.pad_idx = pad_idx
         self.emb = nn.Embedding(vocab_size, emb_dim, padding_idx=pad_idx)
