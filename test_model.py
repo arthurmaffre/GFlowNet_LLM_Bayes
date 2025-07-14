@@ -253,7 +253,7 @@ def train_baseline(num_epochs=50, batch_size=128):
         if avg_loss < 0.5:
             break
 
-#train_baseline()
+train_baseline()
 
 torch.save(llm_model.state_dict(), "baseline_llm.pth")
 
