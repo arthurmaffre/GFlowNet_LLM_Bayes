@@ -1,3 +1,5 @@
+**⚠️ If you're not a fucking lunatic, get out of here.**
+
 # Overview
 
 This repository implements a novel research idea for enhancing Large Language Models (LLMs) with robust causal reasoning and Bayesian coherence using Generative Flow Networks (GFlowNets) as an adversarial component. The core concept is to redefine "intelligence" in AI systems as the ability to maintain Bayesian entropy—i.e., structured uncertainty and exploration—while ensuring internal consistency with an unstable environment.
