@@ -2,9 +2,11 @@
 
 # Overview
 
-This repository implements a novel research idea for enhancing Large Language Models (LLMs) with robust causal reasoning and Bayesian coherence using Generative Flow Networks (GFlowNets) as an adversarial component. The core concept is to redefine "intelligence" in AI systems as the ability to maintain Bayesian entropy—i.e., structured uncertainty and exploration—while ensuring internal consistency with an unstable environment.
+The core thesis: true artificial intelligence is not merely about next-token prediction, it is about exploiting uncertainty to perform structured belief revision. In this view, stochasticity is not noise to be averaged out, but a latent structure, that must be constrained and shaped by Bayesian consistency.
 
-Traditional LLMs are autoregressive predictors that estimate the next token $ P_\theta(x_{t+1} | x_{1:t}) $ based on prefixes, but they often fail to build explicit causal structures or adapt priors dynamically to evidence (e.g., updating disease probabilities based on contextual clues like travel history). This project addresses that by setting up an adversarial game:
+Modern LLMs may achieve linguistic fluency, but they frequently violate fundamental probabilistic principles. They fail to update beliefs when presented with new evidence, and assign incoherent probabilities to mutually exclusive outcomes. This is not creativity, it is unstructured entropy masquerading as intelligence, a failure to enforce internal coherence in the face of uncertainty.
+
+Traditional LLMs are autoregressive predictors that estimate the next token $ P_\theta(x_{t+1} | x_{1:t}) $ based on prefixes, but they often fail to build explicit causal structures (e.g., updating disease probabilities based on contextual clues like travel history). This project addresses that by setting up an adversarial game:
 
 - GFlowNet (Adversary): Generates batches of "perturbing" sequences that violate Bayesian relations (e.g., prior × likelihood ≠ posterior), acting as an "information adversary" to introduce non-sense and challenge the LLM.
 - LLM (Defender): Reconstructs coherence by minimizing the divergence from Bayesian consistency, learning to internalize causal schemas robust to instability.
