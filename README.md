@@ -1,6 +1,6 @@
 **⚠️ If you're not a fucking lunatic, get out of here.**
 
-## Project Level 🚀: Level 2 / 5  
+**Project Level 🚀: Level 2 / 5** — [see the 5‑level scale here](https://github.com/arthurmaffre/arthurmaffre)
 
 # Overview
 
