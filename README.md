@@ -1,5 +1,7 @@
 **⚠️ If you're not a fucking lunatic, get out of here.**
 
+## Project Level 🚀: Level 2 / 5  
+
 # Overview
 
 The core thesis: true artificial intelligence is not merely about next-token prediction, it is about exploiting uncertainty to perform structured belief revision. In this view, stochasticity is not noise to be averaged out, but a latent structure, that must be constrained and shaped by Bayesian consistency.
