@@ -4,14 +4,48 @@
 
 # Overview
 
-The core thesis: true artificial intelligence is not merely about next-token prediction, it is about exploiting uncertainty to perform structured belief revision. In this view, stochasticity is not noise to be averaged out, but a latent structure, that must be constrained and shaped by Bayesian consistency.
+As I argue:
 
-Modern LLMs may achieve linguistic fluency, but they frequently violate fundamental probabilistic principles. They fail to update beliefs when presented with new evidence, and assign incoherent probabilities to mutually exclusive outcomes. This is not creativity, it is unstructured entropy masquerading as intelligence, a failure to enforce internal coherence in the face of uncertainty.
+> True artificial intelligence is not merely about next-token prediction, it is about exploiting uncertainty to perform structured belief revision. In this view, stochasticity is not noise to be averaged out, but a latent structure, that must be constrained and shaped by Bayesian consistency.
 
-Traditional LLMs are autoregressive predictors that estimate the next token $P_\theta(x_{t+1} | x_{1:t})$ based on prefixes, but they often fail to build explicit causal structures (e.g., updating disease probabilities based on contextual clues like travel history). This project addresses that by setting up an adversarial game:
+We propose a new architecture called **LUCIDE**: **Latent Unified Causal Inference through Dynamic Equilibrium**. LUCIDE is a 4-phase generative Bayesian model, based on the dynamic equilibrium between 4 entities:
+- an environment prior $p_{env}$ (learned frequency of events)
+- an internal prior $p_{internal}$ (prior of the learned causal model)
+- a conditional Seq2Seq model $p(y|x)$
+- an adversary that learns a contrastive distribution over contexts $p_{adv}(x)$.
 
-- GFlowNet (Adversary): Generates batches of "perturbing" sequences that violate Bayesian relations (e.g., prior × likelihood ≠ posterior), acting as an "information adversary" to introduce non-sense and challenge the LLM.
-- LLM (Defender): Reconstructs coherence by minimizing the divergence from Bayesian consistency, learning to internalize causal schemas robust to instability.
+The objective is to unify causal inference and generation through a self-regulated flow of probabilities.
+
+# Motivation
+
+Modern LLMs may achieve linguistic fluency, but they frequently violate fundamental causal principles. They fail to update beliefs when presented with new evidence, and assign incoherent causal inference to mutually exclusive outcomes. This is not creativity, it is unstructured entropy masquerading as intelligence, a failure to enforce internal coherence in the face of uncertainty.
+
+Traditional LLMs are autoregressive predictors that estimate the next token $P_\theta(x_{t+1} | x_{1:t})$ based on prefixes, but they often fail to build explicit causal structures. For instance, consider a medical LLM: when a patient asks "I have a runny nose, what illness do I have?", the model might output $P(\text{cold}) \approx 0.9$ and $P(\text{tuberculosis}) \approx 0.01$. However, if the patient adds "I recently traveled to India", the model should revise its beliefs—yet $P(\text{tuberculosis} | \text{travel to India})$ often remains near 0.01, failing to account for the fact that $P(\text{travel to India} | \text{tuberculosis})$ carries significant evidential weight in a proper causal model (India has higher tuberculosis prevalence than North America, where it is largely eradicated). A true causal reasoner would invoke Bayesian inversion and update accordingly. 
+
+The prior of our belief system cannot rely solely on frequency of occurrence. Consider the example: "54234 + 13352" has virtually no chance of appearing in the LLM's training data, while "it's nice weather today" appears significantly more often. We introduce the relation: $p_{\text{prior}} = p_{\text{env}} \times p_{\text{internal}}$.
+
+Where:
+
+- $p_{\text{prior}}$: the prior of our Bayesian model.
+- $p_{\text{env}}$: the distribution of occurrence in the environment (observational frequency).
+- $p_{\text{internal}}$: the prior over our internal belief system (structural necessity).
+
+To visualize this, consider these examples:
+
+- **"54234 + 13352"**: Here $p_{\text{env}}$ is low because we almost never observe this exact expression, but $p_{\text{internal}} \approx 1$ because if this were false, it would violate our entire mathematical belief system within a given formal framework.
+- **"it's nice weather today"**: Here $p_{\text{env}}$ may be higher because small talk about weather is common, but $p_{\text{internal}}$ is lower because there is no strong causal necessity to this statement—it carries little inferential weight.
+
+This approach is conceptually aligned with the **Integrated World Modeling Theory (IWMT)** framework from constructivist theories of consciousness, which posit that conscious experience arises from Bayesian inference over separately maintained internal models and external world distributions. In IWMT, the brain maintains distinct generative models: one representing the causal structure of the world, and another encoding the agent's internal beliefs and goals. Our decomposition $p_{\text{prior}} = p_{\text{env}} \times p_{\text{internal}}$ mirrors this distinction—separating observational frequency ($p_{\text{env}}$) from structural necessity in the agent's belief system ($p_{\text{internal}}$).
+
+However, learning these distributions over the space of possible contexts cannot be achieved through classical sampling methods. We propose to use **GFlowNets** and **distributional reinforcement learning** to learn and infer these distributions in a tractable manner.
+
+# Method
+
+This project addresses this limitation by setting up un jeu en 4 phases:
+
+## Phase 1
+
+Sur le dataset de l'environnement
 
 The approach is inspired by Bayesian principles and aims to create more human-like AI that avoids incoherent self-reinforcement loops. We start with a toy domain (simple additions) to test the idea empirically, with plans to scale to natural language.
 
@@ -22,7 +56,7 @@ Key Goals:
 
 This is a prototype implementation.
 
-## Motivation
+
 
 From discussions (e.g., email thread with Prof. William J. Mccausland):
 
