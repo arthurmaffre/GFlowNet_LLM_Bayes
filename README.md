@@ -2,6 +2,8 @@
 
 **Project Level 🚀: Level 2 / 5** — [see the 5‑level scale here](https://github.com/arthurmaffre/arthurmaffre)
 
+# LUCIDE : Latent Unified Causal Inference through Dynamic Equilibrium
+
 # Overview
 
 As I argue:
