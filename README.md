@@ -4,6 +4,8 @@
 
 # LUCIDE : Latent Unified Causal Inference through Dynamic Equilibrium
 
+For mathematical definitions and formal framework, see [definition.md](definition.md)
+
 # Overview
 
 As I argue:
