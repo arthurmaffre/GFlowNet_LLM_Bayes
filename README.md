@@ -36,8 +36,8 @@ Where:
 
 To visualize this, consider these examples:
 
-- **"54234 + 13352"**: Here $p^{env}_\theta$ is low because we almost never observe this exact expression, but $p^{internal}_\psi \approx 1$ because if this were false, it would violate our entire mathematical belief system within a given formal framework.
-- **"it's nice weather today"**: Here $p^{env}_\theta$ may be higher because small talk about weather is common, but $p^{internal}_\psi$ is lower because there is no strong causal necessity to this statement—it carries little inferential weight.
+- **"54234 + 13352"**: Here $p_\theta^{env}$ is low because we almost never observe this exact expression, but $p^{internal}_\psi \approx 1$ because if this were false, it would violate our entire mathematical belief system within a given formal framework.
+- **"it's nice weather today"**: Here $p_\theta^{env}$ may be higher because small talk about weather is common, but $p_\psi^{internal}$ is lower because there is no strong causal necessity to this statement—it carries little inferential weight.
 
 This approach is conceptually aligned with the **Integrated World Modeling Theory (IWMT)** framework from constructivist theories of consciousness, which posit that conscious experience arises from Bayesian inference over separately maintained internal models and external world distributions. In IWMT, the brain maintains distinct generative models: one representing the causal structure of the world, and another encoding the agent's internal beliefs and goals. Our decomposition $p_{\theta,\psi}^{\text{prior}} \propto p^{\text{env}}_\theta \times p^{internal}_\psi$ mirrors this distinction—separating observational frequency ($p^{\text{env}}_\theta$) from internal causal structure model in the agent's belief system ($p^{\text{internal}}_\psi$).
 
