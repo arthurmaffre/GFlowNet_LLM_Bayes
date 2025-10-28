@@ -49,7 +49,7 @@ This project addresses this limitation by setting up un jeu en 4 phases:
 
 $$p_{\theta,\psi}^{\text{prior}} = \frac{p^{env}_\theta \times p^{internal}_\psi}{Z_{\theta,\psi}}$$
 
-## loop 1 (mise à jour sur l'environnement)
+## Phase 1 (mise à jour sur l'environnement)
 
 #### But : mettre à jour la distribution de prédiction ainsi que la distribution de fréquence d'apparition basée sur l'environnement
 
@@ -69,7 +69,7 @@ Equivalent, we minimize:
 
 $$\phi^* = \arg \min_\phi \mathbb{E}_{(x,y) \sim p^{\text{env}}} \left[ - \log p_{\phi}^{\text{LLM}}(y|x) \right]$$
 
-## loop 2 (mettre à jour le système de croyance interne façe aux nouvelles évidences)
+## Phase 2 (mettre à jour le système de croyance interne façe aux nouvelles évidences)
 
 #### But : mettre à jour son système de croyance interne avec notre distribution prédictive et celle de l'environnement mise à jour (phase de rêve ou on explore son propre système de croyance basés sur nos observations de l'environnement)
 
@@ -79,21 +79,40 @@ $$\underbrace{p^{\text{env}}_\theta(x) \times p^{\text{internal}}_\psi}_{p_{\the
 
 We minimize :
 
-$$\psi^* = \arg \min_\psi \mathbb{E}_{x \sim p^{internal}_\psi} \left[ \log \left(\frac{Z_\psi^{\text{internal}} \times p_\psi^{\text{internal}}(x)}{R(x)}\right)^2 \right] \quad \text{with,} \quad R(x)=\underbrace{p^{\text{env}}_\theta(x) \times p^{\text{internal}}_\psi(x)}_{p_{\theta,\psi}^{\text{prior}}(x)} \times p_\phi^{\text{LLM}}(y |x)$$
+$$\psi^* = \arg \min_\psi \mathbb{E}_{x \sim p^{internal}_\psi} \left[  \left(\log \frac{Z_\psi^{\text{internal}} \times p_\psi^{\text{internal}}(x)}{R(x)}\right)^2 \right], \quad R(x) = \underbrace{p^{\text{env}}_\theta(x) \times p^{\text{internal}}_\psi(x)}_{p_{\theta,\psi}^{\text{prior}}(x)} \times p_\phi^{\text{LLM}}(y |x)$$
 
-## loop 3
+## Phase 3 (mettre à jour l'adversaire bayésien : trouver des séquences contradictoires)
+
+#### But : mettre à jour la distribution adverseriale de manière à inférer des séquences qui brisent la cohérence bayésienne
 
 ### Optimal 4
 
-On cherche $p_{adv}$ qui va maximiser la divergence bayésienne
+We aim to infere a distribution $p_\omega^\text{adv}$ :
 
-## loop 4
+$$\underbrace{p^{\text{env}}_\theta(x) \times p^{\text{internal}}_\psi}_{p_{\theta,\psi}^{\text{prior}}(x)} \times p_{\phi}^{\text{LLM}}(y|x) \not\propto p^{\text{env}}(x|y), \quad \forall x \sim p^{\text{adv}}_\omega$$
 
-### Optimal 5
+$$$$
 
-On va ajuster nos actions en se basant sur nos propres contradictions
+On cherche $p_{adv}$ qui va maximiser la divergence bayésienne :
 
-## Phase 1
+$$\omega^* = \arg \min_\omega \mathbb{E}_{x \sim p^{adv}_\omega} \left[ - \left(\log \frac{Z_\omega^{\text{adv}} \times p_\omega^{\text{adv}}(x)}{R(x)}\right)^2 \right], \quad R(x) = \underbrace{p^{\text{env}}_\theta(x) \times p^{\text{internal}}_\psi(x)}_{p_{\theta,\psi}^{\text{prior}}(x)} \times p_\phi^{\text{LLM}}(y |x)$$
+
+## Phase 4 (correction sur les contradictions adversariales)
+
+#### But : ajuster le modèle génératif pour restaurer la cohérence bayésienne sur les contextes adversariaux
+
+### Optimal 5 : &nbsp; ( $p_\phi^\text{LLM}(y|x)$ avec $x \sim p^{\text{adv}}_\omega$ )
+
+On cherche à maximiser la vraisemblance marginale $p(y)$ en corrigeant les incohérences détectées par l'adversaire dans une distribution qui favorise des séquences incohérentes :
+
+$$\phi^* = \arg \min_\phi \mathbb{E}_{x \sim p^{\text{adv}}_\omega} \left[ - \log \left( \underbrace{p^{\text{env}}_\theta(x) \times p^{\text{internal}}_\psi(x)}_{p_{\theta,\psi}^{\text{prior}}(x)} \times p_\phi^{\text{LLM}}(y|x) \right) \right]
+$$
+
+## Key metric
+
+On peut utiliser 
+
+# LUCIDE : Phase 1
 
 Sur le dataset de l'environnement
 
@@ -116,17 +135,6 @@ From discussions (e.g., email thread with Prof. William J. Mccausland):
 - Solution: An unsupervised adversarial loop where GFlowNet creates adaptive, environment-grounded priors, and LLM enforces the Bayes equation. For both agents, we also compute gradients on the difference $ P(\text{Action}) \times P(\text{Info|Action}) - P(\text{sequence}) $ to preserve causal order over the entire sequence (not just next token). Here, P(Info|Action) is the product of token generation probabilities across the sequence for a given prefix, P(sequence) is the probability as if forcing GFlowNet to generate the full sequence (prefix + response), and the prior is GFlowNet's P if stopping at the "question" prefix.
 
 This could lead to more robust AIs, closer to human knowledge internalization.
-
-# Approach (V3: Bayesian GFlowNet for Causal LLMs via Differential Topology)
-
-## Part1: Semantic Manifold Setup (Intuition: Map of Meanings)
-
-View sequences as paths on a Riemannian manifold $\mathcal{M}$, points $p \in \mathcal{M}$ as embedded prefixes (vectors in $\mathbb{R}^d$). Metric $g$ from KL/cos sim for "semantic distance." Topology: Open sets around coherent prefixes. Intuition: Curved space where close points share causal logic; far ones diverge wildly. Differential structure for local flow, tangent spaces $T_p \mathcal{M}$ handle next-token perturbation.
-
-## Part2: Transition Kernels and Flows (Intuition: Semantic Rivers)
-
-Kernels $K_p : \mathcal{V} \rightarrow [0, 1]$ (LLM probs) as vector fields $X : \mathcal{M} \rightarrow T \mathcal{M}$, pushing geodesics. GFlowNet generates trajectories $\tau$ proportional to reward $R$ (divergence + causal order), inducing probability current $J = \rho v$ (Folker-Plank: )
-
 ### Why GFlowNets?
 - Efficient for discrete, high-dimensional spaces.
 - Sample proportional to rewards (divergence), avoiding enumeration.
