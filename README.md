@@ -47,6 +47,52 @@ However, learning these distributions over the space of possible contexts cannot
 
 This project addresses this limitation by setting up un jeu en 4 phases:
 
+$$p_{\text{prior}} = p_{\text{env}} \times p_{\text{internal}}$$
+
+## loop 1
+### Optimal 1 ($p_{env}$):
+
+$$p_{env}^\theta(x) \propto p_{env}(x), \quad \forall x \sim p_{env}\$$
+
+soit:
+
+$$\theta^* = \arg \min_\theta \mathbb{E}_{x \sim p_{env}} \left[ \log \frac{p_{\text{env}}(x)}{p_{\text{env}}^{\theta}(x)}\right]$$
+
+### Optimal 2 ($p(y|x)$):
+
+$$p_{\phi}(y|x) \propto p(y|x), \quad \forall (x,y) \sim p_{env}(x,y)$$
+
+where $(x,y)$ are input-output pairs sampled from the environment distribution.
+
+Equivalent, we minimize:
+
+$$\phi^* = \arg \min_\phi \mathbb{E}_{(x,y) \sim p_{env}} \left[ - \log p_\phi (y|x) \right]$$
+
+## loop 2
+
+### Optimal 3
+
+$$\underbrace{p_{\text{env}}^\theta(x) \times p_{\text{internal}}^\psi(x)}_{p_{\text{prior}}(x)} \times p^\phi(y|x) \propto p(x|y), \quad \forall x \sim p_{\text{internal}}$$
+
+On minimise :
+
+$$\psi^* = \arg \min_\psi \mathbb{E}_{x \sim p_{internal}} \left[ \log \left(\frac{Z^\psi \times P_\psi(x)}{R(x)}\right)^2 \right], \quad R(x)=\underbrace{p_{\text{env}}^\theta(x) \times p_{\text{internal}}^\psi(x)}_{p_{\text{prior}}(x)} \times p_\phi(y |x)$$
+
+
+On veut mettre à jour notre système de croyance interne après ce que l'on a observé du monde.
+
+## loop 3
+
+### Optimal 4
+
+On cherche $p_{adv}$ qui va maximiser la divergence bayésienne
+
+## loop 4
+
+### Optimal 5
+
+On va ajuster nos actions en se basant sur nos propres contradictions
+
 ## Phase 1
 
 Sur le dataset de l'environnement
