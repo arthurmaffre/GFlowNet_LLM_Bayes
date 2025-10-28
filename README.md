@@ -13,10 +13,10 @@ As I argue:
 > True artificial intelligence is not merely about next-token prediction, it is about exploiting uncertainty to perform structured belief revision. In this view, stochasticity is not noise to be averaged out, but a latent structure, that must be constrained and shaped by Bayesian consistency.
 
 We propose a new architecture called **LUCIDE**: **Latent Unified Causal Inference through Dynamic Equilibrium**. LUCIDE is a 4-phase generative Bayesian model, based on the dynamic equilibrium between 4 entities:
-- an environment prior $p_{env}$ (learned frequency of events)
-- an internal prior $p_{internal}$ (prior of the learned causal model)
-- a conditional Seq2Seq model $p(y|x)$
-- an adversary that learns a contrastive distribution over contexts $p_{adv}(x)$.
+- an environment prior $p^{env}_\theta$ (learned frequency of events)
+- an internal prior $p^{internal}_\psi$ (prior of the learned causal model)
+- a conditional Seq2Seq model $p^{LLM}_\phi(y|x)$
+- an adversary that learns a contrastive distribution over contexts $p^{adv}_\omega(x)$.
 
 The objective is to unify causal inference and generation through a self-regulated flow of probabilities.
 
@@ -24,22 +24,22 @@ The objective is to unify causal inference and generation through a self-regulat
 
 Modern LLMs may achieve linguistic fluency, but they frequently violate fundamental causal principles. They fail to update beliefs when presented with new evidence, and assign incoherent causal inference to mutually exclusive outcomes. This is not creativity, it is unstructured entropy masquerading as intelligence, a failure to enforce internal coherence in the face of uncertainty.
 
-Traditional LLMs are autoregressive predictors that estimate the next token $P_\theta(x_{t+1} | x_{1:t})$ based on prefixes, but they often fail to build explicit causal structures. For instance, consider a medical LLM: when a patient asks "I have a runny nose, what illness do I have?", the model might output $P(\text{cold}) \approx 0.9$ and $P(\text{tuberculosis}) \approx 0.01$. However, if the patient adds "I recently traveled to India", the model should revise its beliefs—yet $P(\text{tuberculosis} | \text{travel to India})$ often remains near 0.01, failing to account for the fact that $P(\text{travel to India} | \text{tuberculosis})$ carries significant evidential weight in a proper causal model (India has higher tuberculosis prevalence than North America, where it is largely eradicated). A true causal reasoner would invoke Bayesian inversion and update accordingly. 
+Traditional LLMs are autoregressive predictors that estimate the next token $P_\phi^{LLM}(x_{t+1} | x_{1:t})$ based on prefixes, but they often fail to build explicit causal structures. For instance, consider a medical LLM: when a patient asks "I have a runny nose, what illness do I have?", the model might output $P(\text{cold} | \text{context}) \approx 0.9$ and $P(\text{tuberculosis} | \text{context}) \approx 0.01$. However, if the patient adds "I recently traveled to India" updated context defined as $context'$, the model should revise its beliefs—yet $P(\text{tuberculosis} | \text{context'})$ often remains near 0.01, failing to account for the fact that $P(\text{evidence traveled to india} | \text{tuberculosis})$ carries significant evidential weight in a proper causal model (India has higher tuberculosis prevalence than North America, where it is largely eradicated). A true causal reasoner would invoke Bayesian inversion and update accordingly. 
 
-The prior of our belief system cannot rely solely on frequency of occurrence. Consider the example: "54234 + 13352" has virtually no chance of appearing in the LLM's training data, while "it's nice weather today" appears significantly more often. We introduce the relation: $p_{\text{prior}} = p_{\text{env}} \times p_{\text{internal}}$.
+The prior of our belief system cannot rely solely on frequency of occurrence. Consider the example: "54234 + 13352" has virtually no chance of appearing in the LLM's training data, while "it's nice weather today" would appear significantly more often. We introduce the relation: $p_{\theta,\psi}^{\text{prior}} \propto p^{env}_\theta \times p^{internal}_\psi$.
 
 Where:
 
-- $p_{\text{prior}}$: the prior of our Bayesian model.
-- $p_{\text{env}}$: the distribution of occurrence in the environment (observational frequency).
-- $p_{\text{internal}}$: the prior over our internal belief system (structural necessity).
+- $p_{\theta,\psi}^{\text{prior}}$: the prior of our Bayesian model parametrized by $\theta, \psi$.
+- $p^{env}_\theta$: the distribution of occurrence in the environment (observational frequency) parametrized by $\theta$.
+- $p^{internal}_\psi$: the prior over our internal belief system (structural necessity) parametrized by $\psi$.
 
 To visualize this, consider these examples:
 
-- **"54234 + 13352"**: Here $p_{\text{env}}$ is low because we almost never observe this exact expression, but $p_{\text{internal}} \approx 1$ because if this were false, it would violate our entire mathematical belief system within a given formal framework.
-- **"it's nice weather today"**: Here $p_{\text{env}}$ may be higher because small talk about weather is common, but $p_{\text{internal}}$ is lower because there is no strong causal necessity to this statement—it carries little inferential weight.
+- **"54234 + 13352"**: Here $p^{env}_\theta$ is low because we almost never observe this exact expression, but $p^{internal}_\psi \approx 1$ because if this were false, it would violate our entire mathematical belief system within a given formal framework.
+- **"it's nice weather today"**: Here $p^{env}_\theta$ may be higher because small talk about weather is common, but $p^{internal}_\psi$ is lower because there is no strong causal necessity to this statement—it carries little inferential weight.
 
-This approach is conceptually aligned with the **Integrated World Modeling Theory (IWMT)** framework from constructivist theories of consciousness, which posit that conscious experience arises from Bayesian inference over separately maintained internal models and external world distributions. In IWMT, the brain maintains distinct generative models: one representing the causal structure of the world, and another encoding the agent's internal beliefs and goals. Our decomposition $p_{\text{prior}} = p_{\text{env}} \times p_{\text{internal}}$ mirrors this distinction—separating observational frequency ($p_{\text{env}}$) from structural necessity in the agent's belief system ($p_{\text{internal}}$).
+This approach is conceptually aligned with the **Integrated World Modeling Theory (IWMT)** framework from constructivist theories of consciousness, which posit that conscious experience arises from Bayesian inference over separately maintained internal models and external world distributions. In IWMT, the brain maintains distinct generative models: one representing the causal structure of the world, and another encoding the agent's internal beliefs and goals. Our decomposition $p_{\theta,\psi}^{\text{prior}} \propto p^{env}_\theta \times p^{internal}_\psi$ mirrors this distinction—separating observational frequency ($p^{env}_\theta$) from internal causal structure model in the agent's belief system ($p^{internal}_\psi$).
 
 However, learning these distributions over the space of possible contexts cannot be achieved through classical sampling methods. We propose to use **GFlowNets** and **distributional reinforcement learning** to learn and infer these distributions in a tractable manner.
 
@@ -47,39 +47,39 @@ However, learning these distributions over the space of possible contexts cannot
 
 This project addresses this limitation by setting up un jeu en 4 phases:
 
-$$p_{\text{prior}} = p_{\text{env}} \times p_{\text{internal}}$$
+$$p_{\theta,\psi}^{\text{prior}} = \frac{p^{env}_\theta \times p^{internal}_\psi}{Z_{\theta,\psi}}$$
 
-## loop 1
-### Optimal 1 ($p_{env}$):
+## loop 1 (mise à jour sur l'environnement)
 
-$$p_{env}^\theta(x) \propto p_{env}(x), \quad \forall x \sim p_{env}\$$
+#### But : mettre à jour la distribution de prédiction ainsi que la distribution de fréquence d'apparition basée sur l'environnement
 
-soit:
+### Optimal 1 : &nbsp; ( $p^{\text{env}}_\theta$ )
 
-$$\theta^* = \arg \min_\theta \mathbb{E}_{x \sim p_{env}} \left[ \log \frac{p_{\text{env}}(x)}{p_{\text{env}}^{\theta}(x)}\right]$$
+$$p^{env}_\theta(x) \propto p^{env}(x), \quad \forall x \sim p^{env}$$
 
-### Optimal 2 ($p(y|x)$):
+$$\qquad \text{where} \quad \theta^* = \arg \min_\theta \mathbb{E}_{x \sim p^{env}} \left[ \log \frac{p^{\text{env}}(x)}{p^{env}_\theta(x)}\right]$$
 
-$$p_{\phi}(y|x) \propto p(y|x), \quad \forall (x,y) \sim p_{env}(x,y)$$
+### Optimal 2 : &nbsp; ( $p_\phi(y|x)$ )
+
+$$p_{\phi}^{\text{LLM}}(y|x) \propto p(y|x), \quad \forall (x,y) \sim p^{env}(x,y)$$
 
 where $(x,y)$ are input-output pairs sampled from the environment distribution.
 
 Equivalent, we minimize:
 
-$$\phi^* = \arg \min_\phi \mathbb{E}_{(x,y) \sim p_{env}} \left[ - \log p_\phi (y|x) \right]$$
+$$\phi^* = \arg \min_\phi \mathbb{E}_{(x,y) \sim p^{\text{env}}} \left[ - \log p_{\phi}^{\text{LLM}}(y|x) \right]$$
 
-## loop 2
+## loop 2 (mettre à jour le système de croyance interne façe aux nouvelles évidences)
+
+#### But : mettre à jour son système de croyance interne avec notre distribution prédictive et celle de l'environnement mise à jour (phase de rêve ou on explore son propre système de croyance basés sur nos observations de l'environnement)
 
 ### Optimal 3
 
-$$\underbrace{p_{\text{env}}^\theta(x) \times p_{\text{internal}}^\psi(x)}_{p_{\text{prior}}(x)} \times p^\phi(y|x) \propto p(x|y), \quad \forall x \sim p_{\text{internal}}$$
+$$\underbrace{p^{\text{env}}_\theta(x) \times p^{\text{internal}}_\psi}_{p_{\theta,\psi}^{\text{prior}}(x)} \times p_{\phi}^{\text{LLM}}(y|x) \propto p^{\text{env}}(x|y), \quad \forall x \sim p^{\text{internal}}$$
 
-On minimise :
+We minimize :
 
-$$\psi^* = \arg \min_\psi \mathbb{E}_{x \sim p_{internal}} \left[ \log \left(\frac{Z^\psi \times P_\psi(x)}{R(x)}\right)^2 \right], \quad R(x)=\underbrace{p_{\text{env}}^\theta(x) \times p_{\text{internal}}^\psi(x)}_{p_{\text{prior}}(x)} \times p_\phi(y |x)$$
-
-
-On veut mettre à jour notre système de croyance interne après ce que l'on a observé du monde.
+$$\psi^* = \arg \min_\psi \mathbb{E}_{x \sim p^{internal}_\psi} \left[ \log \left(\frac{Z_\psi^{\text{internal}} \times p_\psi^{\text{internal}}(x)}{R(x)}\right)^2 \right] \quad \text{with,} \quad R(x)=\underbrace{p^{\text{env}}_\theta(x) \times p^{\text{internal}}_\psi(x)}_{p_{\theta,\psi}^{\text{prior}}(x)} \times p_\phi^{\text{LLM}}(y |x)$$
 
 ## loop 3
 
