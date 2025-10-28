@@ -91,8 +91,6 @@ We aim to infere a distribution $p_\omega^\text{adv}$ :
 
 $$\underbrace{p^{\text{env}}_\theta(x) \times p^{\text{internal}}_\psi}_{p_{\theta,\psi}^{\text{prior}}(x)} \times p_{\phi}^{\text{LLM}}(y|x) \not\propto p^{\text{env}}(x|y), \quad \forall x \sim p^{\text{adv}}_\omega$$
 
-$$$$
-
 On cherche $p_{adv}$ qui va maximiser la divergence bayésienne :
 
 $$\omega^* = \arg \min_\omega \mathbb{E}_{x \sim p^{adv}_\omega} \left[ - \left(\log \frac{Z_\omega^{\text{adv}} \times p_\omega^{\text{adv}}(x)}{R(x)}\right)^2 \right], \quad R(x) = \underbrace{p^{\text{env}}_\theta(x) \times p^{\text{internal}}_\psi(x)}_{p_{\theta,\psi}^{\text{prior}}(x)} \times p_\phi^{\text{LLM}}(y |x)$$
