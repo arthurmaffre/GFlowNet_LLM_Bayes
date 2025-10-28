@@ -108,7 +108,30 @@ $$
 
 ## Key metric
 
-On peut utiliser 
+On peut essayer de créer une métrique d'intelligence générale avec ELBO:
+
+$$\log p(y) \geq \text{ELBO} \approx MI(y, x) -H[y|x]$$
+
+- MI : Mutual Information entre (y, x).
+- $H[y|x]$ : entropy conditionnelle de y par rapport à x.
+
+Voici le twist : souvenez-vous p39 de GFlowNets foundation
+
+$$H[S|x] = \frac{F'(s_0 | x)}{F(s_0 | x)} + \log F(s_0 | x)$$
+
+puis la définition 53:
+
+Given a reward function $R$ with $0 \leq R(s) < 1 \quad \forall s$, we define the **entropic reward function** $R'$ associated with $R$ as:
+
+$$R'(s) = -R(s) \log R(s)$$
+
+et : 
+
+In brief, in this section, they show that we can estimate entropies by training two GFlowNets. (p39 GFlownet Foundations) 
+
+$$MI(S; X) = H[S] - E_X[H[S | X]] = \frac{F'(s_0)}{F(s_0)} + \log F(s_0) - E_X \left[ \frac{F'(s_0 | X)}{F(s_0 | X)} + \log F(s_0 | X) \right]$$
+
+Serieux WTF c'est trop parfait, comme si ca n'avait pas été mis là par hasard. Pareil pour les conditionnal GFN (p63)
 
 # LUCIDE : Phase 1
 
