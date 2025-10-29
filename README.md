@@ -210,18 +210,30 @@ $$
 **Evaluation**: Measure accuracy on the held-out evaluation set (additions in [40,49]).
 
 ### LUCIDE Implementation
-- **Components**:
-  - **Environmental Prior $p^{env}_\theta$**: Learned from observational frequencies in the training set.
-  - **Internal Prior $p^{internal}_\psi$**: Initialized with structural biases.
-  - **Conditional Model $p^{LLM}_\phi$**: Same base architecture as baseline, but integrated into the four-phase loop.
-  - **Adversarial Distribution $p^{adv}_\omega$**: Trained to generate contexts violating Bayesian coherence (e.g., rare carry-over cases in addition).
-- **Training Phases**:
-  1. **Environmental Grounding**: Align $p^{env}_\theta$ and $p^{LLM}_\phi$ with training data.
-  2. **Internal Belief Consolidation**: Optimize $p^{internal}_\psi$ for consistency using GFlowNets to sample hierarchical arithmetic structures.
-  3. **Adversarial Exploration**: Use distributional RL to identify failure modes (e.g., multi-digit carries unseen in sparse data).
-  4. **Adversarial Correction**: Fine-tune $p^{LLM}_\phi$ on adversarial samples to restore coherence.
-- **Iterations**: Run 5 full cycles of the four phases, with GFlowNets handling tractable sampling over the combinatorial space.
-- **Evaluation**: Same as baseline, focusing on accuracy and uncertainty quantification.
+
+**Components:**
+
+Environmental Prior $p^{env}_\theta$ — Learned from observational frequencies in the training set.
+
+Internal Prior $p^{internal}_\psi$ — Initialized with structural biases.
+
+Conditional Model $p^{LLM}_\phi$ — Same base architecture as baseline, but integrated into the four-phase loop.
+
+Adversarial Distribution $p^{adv}_\omega$ — Trained to generate contexts violating Bayesian coherence (e.g., rare carry-over cases in addition).
+
+**Training Phases:**
+
+**Phase 1: Environmental Grounding** — Align $p^{env}_\theta$ and $p^{LLM}_\phi$ with training data.
+
+**Phase 2: Internal Belief Consolidation** — Optimize $p^{internal}_\psi$ for consistency using GFlowNets to sample hierarchical arithmetic structures.
+
+**Phase 3: Adversarial Exploration** — Use distributional RL to identify failure modes (e.g., multi-digit carries unseen in sparse data).
+
+**Phase 4: Adversarial Correction** — Fine-tune $p^{LLM}_\phi$ on adversarial samples to restore coherence.
+
+**Iterations:** Run 5 full cycles of the four phases, with GFlowNets handling tractable sampling over the combinatorial space.
+
+**Evaluation:** Same as baseline, focusing on accuracy and uncertainty quantification.
 
 ## Metrics
 - **Accuracy**: Proportion of correct additions.
