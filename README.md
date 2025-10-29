@@ -20,189 +20,218 @@ We propose a new architecture called **LUCIDE**: **Latent Unified Causal Inferen
 
 The objective is to unify causal inference and generation through a self-regulated flow of probabilities.
 
-# Motivation
+# The Frequency Paradox of Modern LLMs
 
-Modern LLMs may achieve linguistic fluency, but they frequently violate fundamental causal principles. They fail to update beliefs when presented with new evidence, and assign incoherent causal inference to mutually exclusive outcomes. This is not creativity, it is unstructured entropy masquerading as intelligence, a failure to enforce internal coherence in the face of uncertainty.
+## The Core Problem
 
-Traditional LLMs are autoregressive predictors that estimate the next token $P_\phi^{LLM}(x_{t+1} | x_{1:t})$ based on prefixes, but they often fail to build explicit causal structures. For instance, consider a medical LLM: when a patient asks "I have a runny nose, what illness do I have?", the model might output $P(\text{cold} | \text{context}) \approx 0.9$ and $P(\text{tuberculosis} | \text{context}) \approx 0.01$. However, if the patient adds "I recently traveled to India" updated context defined as $context'$, the model should revise its beliefs—yet $P(\text{tuberculosis} | \text{context'})$ often remains near 0.01, failing to account for the fact that $P(\text{evidence traveled to india} | \text{tuberculosis})$ carries significant evidential weight in a proper causal model (India has higher tuberculosis prevalence than North America, where it is largely eradicated). A true causal reasoner would invoke Bayesian inversion and update accordingly. 
+Modern LLMs achieve linguistic fluency through pattern recognition, but systematically fail at higher-order causal reasoning. This isn't a simple scaling problem - it's a fundamental frequency issue in the data itself.
 
-The prior of our belief system cannot rely solely on frequency of occurrence. Consider the example: "54234 + 13352" has virtually no chance of appearing in the LLM's training data, while "it's nice weather today" would appear significantly more often. We introduce the relation: $p_{\theta,\psi}^{\text{prior}} \propto p_\theta^{env} \times p_\psi^{internal}$.
+## The Frequency Hierarchy
+
+At the lowest level, word combinations and grammatical structures appear millions of times in any dataset. The model easily learns these atomic building blocks. But as we stack these blocks into higher-order structures - from phrases to paragraphs to causal arguments - each specific configuration becomes exponentially rarer. 
+
+- **Low-level patterns**: A particular grammatical pattern might appear millions of times
+- **High-level patterns**: A specific chain of causal reasoning might appear only once, or never
+
+The model is forced to generalize from increasingly sparse examples. When constructing complex logical arguments or mathematical proofs, it's not truly reasoning - it's attempting to pattern-match against configurations it has rarely or never seen. 
+
+This is why LLMs often fail catastrophically in mathematics when writing expressions: each specific arrangement of symbols and logical steps is unique, and the model cannot rely on frequency-based pattern matching.
+
+## The Scaling Illusion
+
+No amount of data can solve this: the space of possible high-level conceptual "Lego towers" is virtually infinite, and each specific tower is essentially unique. The model succeeds at language because language's low-level patterns are redundant and frequent. It fails at reasoning because reasoning's high-level patterns are rare and specific.
+
+## Failure of Causal Updates
+
+Traditional LLMs are autoregressive predictors that estimate the next token $P_\phi^{LLM}(x_{t+1} | x_{1:t})$ based on prefixes, but they often fail to build explicit causal structures. 
+
+### Medical Diagnosis Example
+
+Consider a medical LLM:
+1. **Initial query**: "I have a runny nose, what illness do I have?"
+   - Model outputs: $P(\text{cold} | \text{context}) \approx 0.9$
+   - Model outputs: $P(\text{tuberculosis} | \text{context}) \approx 0.01$
+
+2. **Updated query**: Patient adds "I recently traveled to India" (context → context')
+   - Expected: Model should revise beliefs using Bayesian updating
+   - Reality: $P(\text{tuberculosis} | \text{context'})$ often remains near 0.01
+   - Problem: Fails to account that $P(\text{India travel} | \text{tuberculosis})$ carries significant evidential weight
+
+A true causal reasoner would invoke Bayesian inversion and update accordingly, recognizing that India has higher tuberculosis prevalence than North America, where it is largely eradicated.
+
+## Beyond Frequency-Based Priors
+
+The prior of our belief system cannot rely solely on frequency of occurrence. Consider: "54234 + 13352" has virtually no chance of appearing in the LLM's training data, while "it's nice weather today" would appear significantly more often.
+
+### Proposed Framework
+
+We introduce the relation:
+
+$$p_{\theta,\psi}^{\text{prior}} \propto p_\theta^{env} \times p_\psi^{internal}$$
 
 Where:
+- $p_{\theta,\psi}^{\text{prior}}$: the prior of our Bayesian model parametrized by $\theta, \psi$
+- $p^{env}_\theta$: the distribution of occurrence in the environment (observational frequency) parametrized by $\theta$
+- $p^{internal}_\psi$: the prior over our internal belief system (structural necessity) parametrized by $\psi$
 
-- $p_{\theta,\psi}^{\text{prior}}$: the prior of our Bayesian model parametrized by $\theta, \psi$.
-- $p^{env}_\theta$: the distribution of occurrence in the environment (observational frequency) parametrized by $\theta$.
-- $p^{internal}_\psi$: the prior over our internal belief system (structural necessity) parametrized by $\psi$.
+### Concrete Examples
 
-To visualize this, consider these examples:
+| Expression | $p_\theta^{env}$ | $p_\psi^{internal}$ | Reasoning |
+|------------|------------------|---------------------|-----------|
+| **"54234 + 13352"** | ≈ 0 (never observed) | ≈ 1 (mathematically necessary) | If false, violates entire mathematical framework |
+| **"it's nice weather today"** | High (common small talk) | Low (no causal necessity) | Carries little inferential weight |
 
-- **"54234 + 13352"**: Here $p_\theta^{env}$ is low because we almost never observe this exact expression, but $p^{internal}_\psi \approx 1$ because if this were false, it would violate our entire mathematical belief system within a given formal framework.
-- **"it's nice weather today"**: Here $p_\theta^{env}$ may be higher because small talk about weather is common, but $p_\psi^{internal}$ is lower because there is no strong causal necessity to this statement—it carries little inferential weight.
+This framework highlights the fundamental disconnect: LLMs optimize for $p_\theta^{env}$ while reasoning requires $p_\psi^{internal}$.
 
-This approach is conceptually aligned with the **Integrated World Modeling Theory (IWMT)** framework from constructivist theories of consciousness, which posit that conscious experience arises from Bayesian inference over separately maintained internal models and external world distributions. In IWMT, the brain maintains distinct generative models: one representing the causal structure of the world, and another encoding the agent's internal beliefs and goals. Our decomposition $p_{\theta,\psi}^{\text{prior}} \propto p_\theta^{\text{env}} \times p_\psi^{internal}$ mirrors this distinction—separating observational frequency ($p_\theta^{\text{env}}$) from internal causal structure model in the agent's belief system ($p_\psi^{\text{internal}}$).
+## Connection to Consciousness Theories
 
-However, learning these distributions over the space of possible contexts cannot be achieved through classical sampling methods. We propose to use **GFlowNets** and **distributional reinforcement learning** to learn and infer these distributions in a tractable manner.
+This approach is conceptually aligned with the **Integrated World Modeling Theory (IWMT)** framework from constructivist theories of consciousness, which posit that conscious experience arises from Bayesian inference over separately maintained internal models and external world distributions. In IWMT, the brain maintains distinct generative models: one representing the causal structure of the world, and another encoding the agent's internal beliefs and goals. 
 
-# Method
+Our decomposition $p_{\theta,\psi}^{\text{prior}} \propto p_\theta^{\text{env}} \times p_\psi^{internal}$ mirrors this distinction—separating observational frequency ($p_\theta^{\text{env}}$) from internal causal structure model in the agent's belief system ($p_\psi^{\text{internal}}$).
 
-This project addresses this limitation by setting up un jeu en 4 phases:
+## Tractable Learning Through Modern Methods
 
-$$p_{\theta,\psi}^{\text{prior}} = \frac{p_\theta^{env} \times p^{internal}}{Z_{\theta,\psi}}$$
+However, learning these distributions over the space of possible contexts cannot be achieved through classical sampling methods. The combinatorial explosion of possible causal chains and belief updates makes traditional approaches intractable.
 
-## Phase 1 (mise à jour sur l'environnement)
+We propose to use **GFlowNets** and **distributional reinforcement learning** to learn and infer these distributions in a tractable manner:
 
-#### But : mettre à jour la distribution de prédiction ainsi que la distribution de fréquence d'apparition basée sur l'environnement
+- **GFlowNets**: Can learn to sample from complex compositional spaces, naturally handling the hierarchical structure of causal reasoning
+- **Distributional RL**: Maintains full distributions over possible outcomes rather than point estimates, enabling proper uncertainty quantification
 
-### Optimal 1 : &nbsp; ( $p^{\text{env}}_\theta$ )
+---
+
+# Method: A Four-Phase Adversarial Bayesian Framework
+
+To address these limitations, we propose a four-phase iterative framework that mirrors human cognitive processes: observation, internal reasoning, adversarial testing, and correction. The key insight is that instead of directly estimating intractable posteriors like $p(x|y)$, we leverage adversarial dynamics—much like humans refine their beliefs through internal debate and confrontation with counterexamples.
+
+$$p_{\theta,\psi}^{\text{prior}} = \frac{p_\theta^{env} \times p_\psi^{internal}}{Z_{\theta,\psi}}$$
+
+## Phase 1: Environmental Grounding
+**Goal**: Update prediction and frequency distributions based on environmental observations
+
+### Learning Environmental Frequency ($p^{\text{env}}_\theta$)
+
+We align our environmental model with observed data:
 
 $$p^{env}_\theta(x) \propto p^{env}(x), \quad \forall x \sim p^{env}$$
 
-$$\qquad \text{where} \quad \theta^* = \arg \min_\theta \mathbb{E}_{x \sim p^{env}} \left[ \log \frac{p^{\text{env}}(x)}{p^{env}_\theta(x)}\right]$$
+$$\theta^* = \arg \min_\theta \mathbb{E}_{x \sim p^{env}} \left[ \log \frac{p^{\text{env}}(x)}{p^{env}_\theta(x)}\right]$$
 
-### Optimal 2 : &nbsp; ( $p_\phi(y|x)$ )
+### Learning Conditional Generation ($p_\phi(y|x)$)
 
-$$p_{\phi}^{\text{LLM}}(y|x) \propto p(y|x), \quad \forall (x,y) \sim p^{env}(x,y)$$
-
-where $(x,y)$ are input-output pairs sampled from the environment distribution.
-
-Equivalent, we minimize:
+Standard autoregressive training on environmental data:
 
 $$\phi^* = \arg \min_\phi \mathbb{E}_{(x,y) \sim p^{\text{env}}} \left[ - \log p_{\phi}^{\text{LLM}}(y|x) \right]$$
 
-## Phase 2 (mettre à jour le système de croyance interne façe aux nouvelles évidences)
+## Phase 2: Internal Belief Consolidation
+**Goal**: Update internal belief system using the learned predictive and environmental distributions (analogous to dream-phase exploration of belief structures)
 
-#### But : mettre à jour son système de croyance interne avec notre distribution prédictive et celle de l'environnement mise à jour (phase de rêve ou on explore son propre système de croyance basés sur nos observations de l'environnement)
-
-### Optimal 3
+We seek consistency between our prior and posterior beliefs:
 
 $$\underbrace{p^{\text{env}}_\theta(x) \times p^{\text{internal}}_\psi}_{p_{\theta,\psi}^{\text{prior}}(x)} \times p_{\phi}^{\text{LLM}}(y|x) \propto p^{\text{env}}(x|y), \quad \forall x \sim p^{\text{internal}}$$
 
-We minimize :
+Optimization objective:
 
-$$\psi^* = \arg \min_\psi \mathbb{E}_{x \sim p^{internal}_\psi} \left[  \left(\log \frac{Z_\psi^{\text{internal}} \times p_\psi^{\text{internal}}(x)}{R(x)}\right)^2 \right], \quad R(x) = \underbrace{p^{\text{env}}_\theta(x) \times p^{\text{internal}}_\psi(x)}_{p_{\theta,\psi}^{\text{prior}}(x)} \times p_\phi^{\text{LLM}}(y |x)$$
+$$\psi^* = \arg \min_\psi \mathbb{E}_{x \sim p^{internal}_\psi} \left[  \left(\log \frac{Z_\psi^{\text{internal}} \times p_\psi^{\text{internal}}(x)}{R(x)}\right)^2 \right]$$
 
-## Phase 3 (mettre à jour l'adversaire bayésien : trouver des séquences contradictoires)
+where $R(x) = p^{\text{env}}_\theta(x) \times p^{\text{internal}}_\psi(x) \times p_\phi^{\text{LLM}}(y|x)$
 
-#### But : mettre à jour la distribution adverseriale de manière à inférer des séquences qui brisent la cohérence bayésienne
+## Phase 3: Adversarial Exploration
+**Goal**: Discover sequences that violate Bayesian coherence—finding the blind spots in our reasoning
 
-### Optimal 4
-
-We aim to infere a distribution $p_\omega^\text{adv}$ :
+We learn an adversarial distribution $p_\omega^\text{adv}$ that generates contexts where our model fails Bayesian consistency:
 
 $$\underbrace{p^{\text{env}}_\theta(x) \times p^{\text{internal}}_\psi}_{p_{\theta,\psi}^{\text{prior}}(x)} \times p_{\phi}^{\text{LLM}}(y|x) \not\propto p^{\text{env}}(x|y), \quad \forall x \sim p^{\text{adv}}_\omega$$
 
-On cherche $p_{adv}$ qui va maximiser la divergence bayésienne :
+We maximize Bayesian divergence:
 
-$$\omega^* = \arg \min_\omega \mathbb{E}_{x \sim p^{adv}_\omega} \left[ - \left(\log \frac{Z_\omega^{\text{adv}} \times p_\omega^{\text{adv}}(x)}{R(x)}\right)^2 \right], \quad R(x) = \underbrace{p^{\text{env}}_\theta(x) \times p^{\text{internal}}_\psi(x)}_{p_{\theta,\psi}^{\text{prior}}(x)} \times p_\phi^{\text{LLM}}(y |x)$$
+$$\omega^* = \arg \max_\omega \mathbb{E}_{x \sim p^{adv}_\omega} \left[ \left(\log \frac{Z_\omega^{\text{adv}} \times p_\omega^{\text{adv}}(x)}{R(x)}\right)^2 \right]$$
 
-## Phase 4 (correction sur les contradictions adversariales)
+This mirrors human cognition: we actively seek counterexamples and edge cases that challenge our beliefs, forcing deeper understanding.
 
-#### But : ajuster le modèle génératif pour restaurer la cohérence bayésienne sur les contextes adversariaux
+## Phase 4: Adversarial Correction
+**Goal**: Restore Bayesian coherence on adversarial contexts—learning from our mistakes
 
-### Optimal 5 : &nbsp; ( $p_\phi^\text{LLM}(y|x)$ avec $x \sim p^{\text{adv}}_\omega$ )
+We adjust the generative model to handle the discovered inconsistencies:
 
-On cherche à maximiser la vraisemblance marginale $p(y)$ en corrigeant les incohérences détectées par l'adversaire dans une distribution qui favorise des séquences incohérentes :
+$$\phi^* = \arg \min_\phi \mathbb{E}_{x \sim p^{\text{adv}}_\omega} \left[ - \log \left( p^{\text{env}}_\theta(x) \times p^{\text{internal}}_\psi(x) \times p_\phi^{\text{LLM}}(y|x) \right) \right]$$
 
-$$\phi^* = \arg \min_\phi \mathbb{E}_{x \sim p^{\text{adv}}_\omega} \left[ - \log \left( \underbrace{p^{\text{env}}_\theta(x) \times p^{\text{internal}}_\psi(x)}_{p_{\theta,\psi}^{\text{prior}}(x)} \times p_\phi^{\text{LLM}}(y|x) \right) \right]
-$$
+By focusing on adversarial examples, we maximize marginal likelihood $p(y)$ without explicitly computing the intractable posterior $p(x|y)$.
 
-## Key metric
+## Intelligence Metrics via ELBO
 
-On peut essayer de créer une métrique d'intelligence générale avec ELBO:
+We can create a general intelligence metric using the Evidence Lower Bound:
 
-$$\log p(y) \geq \text{ELBO} \approx MI(y, x) -H[y|x]$$
+$$\log p(y) \geq \text{ELBO} \approx MI(y, x) - H[y|x]$$
 
-- MI : Mutual Information entre (y, x).
-- $H[y|x]$ : entropy conditionnelle de y par rapport à x.
+where:
+- $MI(y, x)$: Mutual Information between inputs and outputs
+- $H[y|x]$: Conditional entropy of outputs given inputs
 
-Voici le twist : souvenez-vous p39 de GFlowNets foundation
+### Connection to GFlowNets
 
-$$H[S|x] = \frac{F'(s_0 | x)}{F(s_0 | x)} + \log F(s_0 | x)$$
+Remarkably, GFlowNets provide exact tools for this framework. From GFlowNets foundations (p.39):
 
-puis la définition 53:
+$$H[S|x] = \frac{F'(s_0 | x)}{F(s_0 | x)} + \log F(s_0 | x)$$
 
-Given a reward function $R$ with $0 \leq R(s) < 1 \quad \forall s$, we define the **entropic reward function** $R'$ associated with $R$ as:
+And the entropic reward function (Definition 53):
 
-$$R'(s) = -R(s) \log R(s)$$
+$$R'(s) = -R(s) \log R(s), \quad \text{where } 0 \leq R(s) < 1$$
 
-et : 
+This allows us to estimate mutual information through dual GFlowNet training:
 
-In brief, in this section, they show that we can estimate entropies by training two GFlowNets. (p39 GFlownet Foundations) 
+$$MI(S; X) = H[S] - \mathbb{E}_X[H[S | X]] = \frac{F'(s_0)}{F(s_0)} + \log F(s_0) - \mathbb{E}_X \left[ \frac{F'(s_0 | X)}{F(s_0 | X)} + \log F(s_0 | X) \right]$$
 
-$$MI(S; X) = H[S] - E_X[H[S | X]] = \frac{F'(s_0)}{F(s_0)} + \log F(s_0) - E_X \left[ \frac{F'(s_0 | X)}{F(s_0 | X)} + \log F(s_0 | X) \right]$$
-
-Serieux WTF c'est trop parfait, comme si ca n'avait pas été mis là par hasard. Pareil pour les conditionnal GFN (p63)
-
-# LUCIDE : Phase 1
-
-Sur le dataset de l'environnement
-
-The approach is inspired by Bayesian principles and aims to create more human-like AI that avoids incoherent self-reinforcement loops. We start with a toy domain (simple additions) to test the idea empirically, with plans to scale to natural language.
-
-Key Goals:
-- Enforce $ P(\text{Prefix} | \text{Token}) \propto P(\text{Token} | \text{Prefix}) \times P(\text{Prefix}) $.
-- Use entropy as a metric only under Bayesian constraints to promote useful diversity.
-- Handle massive discrete spaces (e.g., $ 26^n $ for tokens) via GFlowNets' efficient sampling.
-
-This is a prototype implementation.
+The alignment between our adversarial Bayesian framework and GFlowNets' entropic formulation suggests a deep connection between causal reasoning, adversarial learning, and information-theoretic measures of intelligence.
 
 
+# LUCIDE: Test 1 — Validation on Addition Dataset
 
-From discussions (e.g., email thread with Prof. William J. Mccausland):
+To empirically validate the LUCIDE framework, we conduct an initial experiment using a synthetic addition dataset. This test assesses the model's ability to perform causal inference and generalization in a controlled arithmetic domain, where ground-truth causal relationships (i.e., addition rules) are well-defined and verifiable. The experiment focuses on evaluating generalization to unseen numbers, comparing LUCIDE against a baseline autoregressive LLM trained with teacher forcing. This serves as a foundational step before scaling to more complex text corpora, such as causal reasoning in natural language.
 
-- Current LLMs predict tokens sequentially but lack explicit causal modeling. Example: "J’ai mal à la tête et le nez qui coule, quelle maladie ai-je ?" → High P(rhume), low P(tuberculose). But adding "Je suis allé en Inde" should boost P(tuberculose)—standard LLMs may not adapt priors well.
-- Entropy alone can lead to useless diversity; it must be constrained by Bayesian coherence to avoid incoherent predictions (e.g., P(rain)=0.6 and P(no-rain)=0.6 sums >1).
-- Problem: Huge search spaces make prior estimation impossible without flexible tools like GFlowNets.
-- Solution: An unsupervised adversarial loop where GFlowNet creates adaptive, environment-grounded priors, and LLM enforces the Bayes equation. For both agents, we also compute gradients on the difference $ P(\text{Action}) \times P(\text{Info|Action}) - P(\text{sequence}) $ to preserve causal order over the entire sequence (not just next token). Here, P(Info|Action) is the product of token generation probabilities across the sequence for a given prefix, P(sequence) is the probability as if forcing GFlowNet to generate the full sequence (prefix + response), and the prior is GFlowNet's P if stopping at the "question" prefix.
+## Dataset Description
+We utilize the addition dataset generated by the provided script (`dataset.py`), which produces exhaustive pairs of additions ```a+b=c``` where $a, b \in [0, 99]$. The dataset is split deterministically:
+- **Training set**: All pairs except those where both $a$ and $b$ are in $[40, 49]$ ($9,900$ samples).
+- **Evaluation set**: Pairs where both $a$ and $b$ are in $[40, 49]$ (100 samples).
 
-This could lead to more robust AIs, closer to human knowledge internalization.
-### Why GFlowNets?
-- Efficient for discrete, high-dimensional spaces.
-- Sample proportional to rewards (divergence), avoiding enumeration.
-- Reference: https://arxiv.org/abs/2202.13903 (integrated for prior estimation).
+Each sample is formatted as a sequence pair: input string (e.g., "43+66=") and target string (e.g., "109"). Metadata includes vocabulary (digits 0-9, '+', '='), maximum sequence lengths, and other parameters for consistency.
 
-## Installation
+## Experimental Setup
+### Baseline: Standard LLM with Teacher Forcing
+- **Model**: A small autoregressive sequence-to-sequence LLM (e.g., based on Transformer architecture with 4 layers, 128 hidden dimensions).
+- **Training**: Fine-tuned on the restricted training set using teacher forcing, optimizing cross-entropy loss: $\phi^* = \arg \min_\phi \mathbb{E}_{(x,y)} [-\log p_\phi(y|x)]$.
+- **Evaluation**: Measure accuracy on the held-out evaluation set (additions in [40,49]).
 
-1. Clone the repo :
+### LUCIDE Implementation
+- **Components**:
+  - **Environmental Prior $p^{env}_\theta$**: Learned from observational frequencies in the training set.
+  - **Internal Prior $p^{internal}_\psi$**: Initialized with structural biases (e.g., uniform over digit combinations, enforcing arithmetic consistency via symbolic constraints).
+  - **Conditional Model $p^{LLM}_\phi$**: Same base architecture as baseline, but integrated into the four-phase loop.
+  - **Adversarial Distribution $p^{adv}_\omega$**: Trained to generate contexts violating Bayesian coherence (e.g., rare carry-over cases in addition).
+- **Training Phases**:
+  1. **Environmental Grounding**: Align $p^{env}_\theta$ and $p^{LLM}_\phi$ with training data.
+  2. **Internal Belief Consolidation**: Optimize $p^{internal}_\psi$ for consistency using GFlowNets to sample hierarchical arithmetic structures.
+  3. **Adversarial Exploration**: Use distributional RL to identify failure modes (e.g., multi-digit carries unseen in sparse data).
+  4. **Adversarial Correction**: Fine-tune $p^{LLM}_\phi$ on adversarial samples to restore coherence.
+- **Iterations**: Run 5 full cycles of the four phases, with GFlowNets handling tractable sampling over the combinatorial space.
+- **Evaluation**: Same as baseline, focusing on accuracy and uncertainty quantification.
 
-```bash
-git clone https://github.com/arthurmaffre/GFlowNet_LLM_Bayes.git
-cd GFlowNet_LLM_Bayes
-```
+## Metrics
+- **Accuracy**: Proportion of correct additions (exact string match for results).
+- **Generalization Gap**: Difference in accuracy between in-distribution evaluation set and OOD set.
+- **Intelligence Metric (ELBO Approximation)**: $\log p(y) \geq MI(y,x) - H[y|x]$, measuring information efficiency and uncertainty handling.
+- **Failure Analysis**: Examine error patterns, such as carry-over mistakes, to assess causal understanding.
 
-2. Create a Conda environment (Python 3.10+)
+## Expected Outcomes and Hypotheses
+- **Baseline Performance**: High accuracy on seen patterns but poor generalization to OOD (e.g., <50% on [100,109] due to reliance on frequency-based memorization).
+- **LUCIDE Performance**: Improved OOD generalization (e.g., >80%) by leveraging internal priors for structural necessity, with adversarial phases mitigating frequency paradoxes.
+- **Validation Criterion**: LUCIDE succeeds if it demonstrates statistically significant improvements in generalization gap and ELBO metric (p<0.05 via bootstrap resampling).
 
-```batch
-conda create -n gflownet_llm python=3.13
-conda activate gflownet_llm
-````
+This test provides a proof-of-concept for LUCIDE's ability to unify causal inference beyond mere pattern matching. Successful results will justify extension to text corpora, such as causal chains in medical or logical reasoning datasets.
 
-3. Install dependencies:
-
-```batch
-pip install torch numpy matplotlib pandas pickle5
-````
-
-(Note: No internet access needed beyond this; code is self-contained.)
-
-## Usage
-
-The main script is test_model.py. It generates data, trains baseline LLM, runs adversarial training, and tests robustness.
-
-**Note**: The code automatically detects and utilizes available hardware (CUDA > MPS (Apple) > CPU).
-
-## Run the Script
-
-```batch
-python test_model.py
-```
-
-## Future Work
-
-- Scale to text: Use QA datasets, perturb sentences for causal tests (e.g., disease diagnosis).
-- Improve Priors: Integrate real environment estimation (e.g., token freq from corpus).
-- Metrics: Add causal inference tests (e.g., do-calculus simulations).
-- Hyperparams: Grid search for emb_dim, heads, epochs, mix_ratio.
+## Implementation Notes
+- Code for this experiment is in `#####`.
+- Results will be logged in `####`, including tables of metrics and sample predictions.
 
 ## License
 
@@ -213,18 +242,16 @@ Retain the copyright notice and this license in all copies or substantial portio
 Cite this repository in any academic or technical publications as follows:
 
 ```LATEX
-@misc{maffre2025gflownetllmbayes,
+@misc{LUCIDE,
   author = {Arthur Maffre},
-  title = {GFlowNet_LLM_Bayes: Enhancing LLMs with Causal Reasoning and Bayesian Coherence using GFlowNets},
+  title = {LUCIDE: Latent Unified Causal Inference through Dynamic Equilibrium},
   year = {2025},
   publisher = {GitHub},
   journal = {GitHub Repository},
-  howpublished = {\url{https://github.com/arthurmaffre/GFlowNet_LLM_Bayes}},
+  howpublished = {\url{https://github.com/arthurmaffre/LUCIDE}},
 }
 ```
 Failure to provide attribution may violate the terms of this license. See the LICENSE file for full details.
-
-
 
 ## 🚧 Work in Progress
 
