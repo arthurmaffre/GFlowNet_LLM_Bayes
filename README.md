@@ -207,7 +207,7 @@ $$
 \alpha^* = \arg \min_\alpha \mathbb{E}_{(x,y)} \left[ - \log p_\alpha (y|x) \right]
 $$
 
-**Evaluation**: Measure accuracy on the held-out evaluation set (additions in [40,49]).
+**Evaluation**: Measure accuracy on the held-out evaluation set (additions in $[40,49]$).
 
 ### LUCIDE
 **Model**: Same base architecture as baseline (GRU, 2 layers, 64 hidden dimensions), but embedded within the four-component LUCIDE system.
