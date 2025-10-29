@@ -209,45 +209,46 @@ $$
 
 **Evaluation**: Measure accuracy on the held-out evaluation set (additions in [40,49]).
 
-### LUCIDE Implementation
+### LUCIDE
+**Model**: Same base architecture as baseline (GRU, 2 layers, 64 hidden dimensions), but embedded within the four-component LUCIDE system.
 
-#### Components:
+**Training**: Iterative four-phase training over 5 complete cycles:
+- **Phase 1**: Align $p^{env}_\theta$ and $p^{LLM}_\phi$ with training data
+- **Phase 2**: Optimize $p^{internal}_\psi$ using GFlowNets for structural consistency
+- **Phase 3**: Generate adversarial samples via $p^{adv}_\omega$ using distributional RL
+- **Phase 4**: Fine-tune $p^{LLM}_\phi$ on adversarial samples for coherence restoration
 
-- Environmental Prior $p^{env}_\theta$ — Learned from observational frequencies in the training set.
-- Internal Prior $p^{internal}_\psi$ — Initialized with structural biases.
-- Conditional Model $p^{LLM}_\phi$ — Same base architecture as baseline, but integrated into the four-phase loop.
-- Adversarial Distribution $p^{adv}_\omega$ — Trained to generate contexts violating Bayesian coherence (e.g., rare carry-over cases in addition).
+**Evaluation**: Same evaluation protocol as baseline, with additional ELBO-based intelligence metric tracking.
 
-#### Training Phases:
 
-**Phase 1: Environmental Grounding** — Align : $p^{env}_\theta$ and $p^{LLM}_\phi$
+## Experimental Hypotheses
 
-with training data.
+### Baseline Expectations
+Strong performance on in-distribution patterns but significant degradation on out-of-distribution inputs. Specifically, we anticipate <50% accuracy on the [40,49] test range due to over-reliance on superficial frequency patterns.
 
-**Phase 2: Internal Belief Consolidation** — Optimize $p^{internal}_\psi$ for consistency using GFlowNets to sample hierarchical arithmetic structures.
+### LUCIDE Predictions
+Substantial improvement in OOD generalization (targeting >80% accuracy), achieved through:
+- Structural priors that encode arithmetic necessity
+- Adversarial training that addresses frequency-based biases
+- Enhanced uncertainty quantification via the intelligence metric
 
-**Phase 3: Adversarial Exploration** — Use distributional RL to identify failure modes (e.g., multi-digit carries unseen in sparse data).
+### Success Criteria
+LUCIDE demonstrates meaningful advantage if:
+1. Generalization gap improves with statistical significance (p < 0.05, bootstrap resampling)
+2. ELBO metric shows superior information efficiency
+3. Qualitative analysis reveals structurally sound reasoning on edge cases
 
-**Phase 4: Adversarial Correction** — Fine-tune $p^{LLM}_\phi$ on adversarial samples to restore coherence.
+---
 
-**Iterations:** Run 5 full cycles of the four phases, with GFlowNets handling tractable sampling over the combinatorial space.
+## Broader Impact
 
-**Evaluation:** Same as baseline, focusing on accuracy and uncertainty quantification.
+This test serves as a proof-of-concept for LUCIDE's core thesis: that meaningful intelligence requires integrating environmental statistics with structural priors through adversarial refinement. Success here validates the framework's potential for extension to complex domains including:
 
-## Metrics
-- **Accuracy**: Proportion of correct additions.
-- **Intelligence Metric (ELBO Approximation)**: $\log p(y) \geq MI(y,x) - H[y|x]$, measuring information efficiency and uncertainty handling.
+- Causal reasoning in medical literature
+- Logical inference chains
+- Multi-step problem decomposition
 
-## Expected Outcomes and Hypotheses
-- **Baseline Performance**: High accuracy on seen patterns but poor generalization to OOD (e.g., <50% on [40,49] due to reliance on frequency-based memorization).
-- **LUCIDE Performance**: Improved OOD generalization (e.g., >80%) by leveraging internal priors for structural necessity, with adversarial phases mitigating frequency paradoxes.
-- **Validation Criterion**: LUCIDE succeeds if it demonstrates statistically significant improvements in generalization gap and ELBO metric (p<0.05 via bootstrap resampling).
-
-This test provides a proof-of-concept for LUCIDE's ability to unify causal inference beyond mere pattern matching. Successful results will justify extension to text corpora, such as causal chains in medical or logical reasoning datasets.
-
-## Implementation Notes
-- Code for this experiment is in `#####`.
-- Results will be logged in `####`, including tables of metrics and sample predictions.
+The simplicity of addition ensures interpretability while capturing fundamental challenges in generalization—making it an ideal starting point for validating LUCIDE's principles before scaling to natural language tasks.
 
 ## License
 
