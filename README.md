@@ -213,7 +213,7 @@ $$
 **Model**: Same base architecture as baseline (GRU, 2 layers, 64 hidden dimensions), but embedded within the four-component LUCIDE system.
 
 **Training**: Iterative four-phase training over 5 complete cycles:
-- **Phase 1**: Align $p^{env}_\theta \text{ and }p^{LLM}_\phi$ with training data
+- **Phase 1**: Align env and llm dist
 - **Phase 2**: Optimize $p^{internal}_\psi$ using GFlowNets for structural consistency
 - **Phase 3**: Generate adversarial samples via $p^{adv}_\omega$ using distributional RL
 - **Phase 4**: Fine-tune $p^{LLM}_\phi$ on adversarial samples for coherence restoration
