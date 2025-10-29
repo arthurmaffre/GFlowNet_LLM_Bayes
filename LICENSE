@@ -27,13 +27,13 @@ You are free to use, modify, and distribute the code, provided that you include 
 Retain the copyright notice and this license in all copies or substantial portions of the software.
 Cite this repository in any academic or technical publications as follows:
 
-@misc{maffre2025gflownetllmbayes,
+@misc{LUCIDE,
   author = {Arthur Maffre},
-  title = {GFlowNet_LLM_Bayes: Enhancing LLMs with Causal Reasoning and Bayesian Coherence using GFlowNets},
+  title = {LUCIDE : Latent Unified Causal Inference through Dynamic Equilibrium},
   year = {2025},
   publisher = {GitHub},
   journal = {GitHub Repository},
-  howpublished = {\url{https://github.com/arthurmaffre/GFlowNet_LLM_Bayes}},
+  howpublished = {\url{https://github.com/arthurmaffre/LUCIDE}},
 }
 
 Failure to provide attribution may violate the terms of this license.
