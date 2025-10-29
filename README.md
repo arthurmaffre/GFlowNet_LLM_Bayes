@@ -200,8 +200,7 @@ Each sample is formatted as a sequence pair: input string (e.g., ```43+66=```) a
 ## Experimental Setup
 ### Baseline: Standard LLM with Teacher Forcing
 - **Model**: A compact autoregressive sequence-to-sequence model (e.g., based on GRU architecture with 2 layers, 64 hidden dimensions).
-- **Training**: Fine-tuned on the training set using teacher forcing, optimizing cross-entropy loss: 
-$$\alpha^* = \arg \min_\alpha \mathbb{E}_{(x,y)} [-\log p_\alpha(y|x)]$$
+- **Training**: Fine-tuned on the training set using teacher forcing, optimizing cross-entropy loss: $\alpha^* = \arg \min_\alpha \mathbb{E}_{(x,y)} [-\log p_\alpha(y|x)]$
 - **Evaluation**: Measure accuracy on the held-out evaluation set (additions in [40,49]).
 
 ### LUCIDE Implementation
