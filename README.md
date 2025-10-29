@@ -211,19 +211,18 @@ $$
 
 ### LUCIDE Implementation
 
-**Components:**
+#### Components:
 
-Environmental Prior $p^{env}_\theta$ — Learned from observational frequencies in the training set.
+- Environmental Prior $p^{env}_\theta$ — Learned from observational frequencies in the training set.
+- Internal Prior $p^{internal}_\psi$ — Initialized with structural biases.
+- Conditional Model $p^{LLM}_\phi$ — Same base architecture as baseline, but integrated into the four-phase loop.
+- Adversarial Distribution $p^{adv}_\omega$ — Trained to generate contexts violating Bayesian coherence (e.g., rare carry-over cases in addition).
 
-Internal Prior $p^{internal}_\psi$ — Initialized with structural biases.
+#### Training Phases:
 
-Conditional Model $p^{LLM}_\phi$ — Same base architecture as baseline, but integrated into the four-phase loop.
+**Phase 1: Environmental Grounding** — Align : $p^{env}_\theta$ and $p^{LLM}_\phi$
 
-Adversarial Distribution $p^{adv}_\omega$ — Trained to generate contexts violating Bayesian coherence (e.g., rare carry-over cases in addition).
-
-**Training Phases:**
-
-**Phase 1: Environmental Grounding** — Align $p^{env}_\theta$ and $p^{LLM}_\phi$ with training data.
+with training data.
 
 **Phase 2: Internal Belief Consolidation** — Optimize $p^{internal}_\psi$ for consistency using GFlowNets to sample hierarchical arithmetic structures.
 
