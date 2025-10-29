@@ -134,7 +134,7 @@ Optimization objective:
 
 $$\psi^* = \arg \min_\psi \mathbb{E}_{x \sim p^{internal}_\psi} \left[  \left(\log \frac{Z_\psi^{\text{internal}} \times p_\psi^{\text{internal}}(x)}{R(x)}\right)^2 \right]$$
 
-where $R(x) = p^{\text{env}}_\theta(x) \times p^{\text{internal}}_\psi(x) \times p_\phi^{\text{LLM}}(y|x)$
+$$R(x) = p^{\text{env}}_\theta(x) \times p^{\text{internal}}_\psi(x) \times p_\phi^{\text{LLM}} (y|x)$$
 
 ## Phase 3: Adversarial Exploration
 **Goal**: Discover sequences that violate Bayesian coherence—finding the blind spots in our reasoning
